@@ -58,7 +58,6 @@ namespace BoofOfMemes
 
         public static bool PreventNewScore(LevelStats __instance, ref long newTime)
         {
-            Debug.Log("Triggered: PreventNewScore");
             if (newTime < __instance._timeBestMicroseconds)
             {
                 if (__instance._timeBestMicroseconds == 999999999999L)
@@ -73,14 +72,12 @@ namespace BoofOfMemes
 
         public static bool PreventNewGhost(Game __instance)
         {
-            Debug.Log("Triggered: PreventNewGhost");
             __instance.winAction = null;
             return true;
         }
 
         public static bool PreventNewBestLevelRush(ref bool __result)
         {
-            Debug.Log("Triggered: PreventNewBestLevelRush");
             __result = false;
             return false;
         }
