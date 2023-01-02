@@ -1,15 +1,13 @@
-﻿using MelonLoader;
-using UnityEngine.SceneManagement;
-using UnityEngine;
+﻿using HarmonyLib;
+using MelonLoader;
 using System.Reflection;
-using HarmonyLib;
-using UnityEngine.InputSystem;
-using System;
+using UnityEngine.SceneManagement;
 
 namespace BoofOfMemes
 {
     public class Main : MelonMod
     {
+        [Obsolete]
         public override void OnApplicationLateStart()
         {
             GameDataManager.powerPrefs.dontUploadToLeaderboard = true;
@@ -32,6 +30,11 @@ namespace BoofOfMemes
                 return;
 
             GS.AddCard("RAPTURE");
+            LevelData currentLevel = Singleton<Game>.Instance.GetCurrentLevel();
+            foreach (DiscardLockData discardLockData in currentLevel.discardLockData)
+                for (int i = 0; i < discardLockData.cards.Count; i++)
+                    if (discardLockData.cards[i].discardAbility == PlayerCardData.DiscardAbility.Telefrag)
+                        discardLockData.cards.RemoveAt(i);
         }
 
         private void PatchGame()
