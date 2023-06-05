@@ -1,10 +1,7 @@
-﻿using MelonLoader;
-using UnityEngine.SceneManagement;
-using UnityEngine;
+﻿using HarmonyLib;
+using MelonLoader;
 using System.Reflection;
-using HarmonyLib;
-using UnityEngine.InputSystem;
-using System;
+using UnityEngine.SceneManagement;
 
 namespace BoofOfMemes
 {
@@ -54,6 +51,9 @@ namespace BoofOfMemes
             patch = new(typeof(Main).GetMethod("UnlockGate"));
             harmony.Patch(target, patch);
 
+            target = typeof(MenuScreenLevelRushComplete).GetMethod("OnSetVisible");
+            patch = new(typeof(Main).GetMethod("PostOnSetVisible"));
+            harmony.Patch(target, null, patch);
         }
 
         public static bool PreventNewScore(LevelStats __instance, ref long newTime)
@@ -88,6 +88,24 @@ namespace BoofOfMemes
                 return false;
             u = true;
             return true;
+        }
+
+        public static void PostOnSetVisible(ref MenuScreenLevelRushComplete __instance)
+        {
+            string text = LevelRush.GetCurrentLevelRushType() switch
+            {
+                LevelRush.LevelRushType.WhiteRush => "White's",
+                LevelRush.LevelRushType.MikeyRush => "Mikeys's",
+                LevelRush.LevelRushType.VioletRush => "Violet's",
+                LevelRush.LevelRushType.RedRush => "Red's",
+                LevelRush.LevelRushType.YellowRush => "Yellow's",
+                _ => "Error"
+            };
+
+            if (text == "Error") return;
+
+            text += (LevelRush.IsHellRush() ? " Hell " : " Heaven ") + "Boof Rush";
+            __instance._rushName.textMeshProUGUI.text = text;
         }
     }
 }
