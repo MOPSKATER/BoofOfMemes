@@ -8,7 +8,7 @@ namespace BoofOfMemes
 {
     public class Main : MelonMod
     {
-        public override void OnApplicationLateStart()
+        public override void OnLateInitializeMelon()
         {
             Anticheat.TriggerAnticheat();
             Anticheat.Register("BoofOfMemes");
@@ -21,8 +21,23 @@ namespace BoofOfMemes
 
             game.OnLevelLoadComplete += OnLevelLoadComplete;
 
+            Settings.Register();
+
             if (RM.drifter)
                 OnLevelLoadComplete();
+        }
+
+        public static class Settings
+        {
+
+            public static MelonPreferences_Category Category;
+            public static MelonPreferences_Entry<bool> Enabled;
+
+            public static void Register()
+            {
+                Category = MelonPreferences.CreateCategory("Boof Mod");
+                Enabled = Category.CreateEntry("Require All Demons", true, description: "Enabling will require all demons be killed to unlock the level gate (main levels only).");
+            }
         }
 
         private void OnLevelLoadComplete()
@@ -53,8 +68,12 @@ namespace BoofOfMemes
 
         public static bool UnlockGate(LevelGate __instance, ref bool u)
         {
+            if (Settings.Enabled.Value)
+                return true;
+
             if (__instance.Unlocked)
                 return false;
+
             u = true;
             return true;
         }
